@@ -1,6 +1,6 @@
 package com.gugas.takeaway
 
-import com.gugas.takeaway.game.GameMessages
+import com.gugas.takeaway.game.GameResponse
 import com.gugas.takeaway.game.GameState
 import org.springframework.http.HttpStatus
 
@@ -14,7 +14,7 @@ object StateChecker {
 
     fun isYourTurnAllowed(gameState: GameState) =
         if (gameState == GameState.AWAITING_MY_MOVE) {
-            CheckResult(false, HttpStatus.FORBIDDEN, GameMessages.AWAITING_MY_MOVE)
+            CheckResult(false, HttpStatus.FORBIDDEN, GameResponse.AWAITING_MY_MOVE)
         } else {
             CheckResult(true)
         }
@@ -22,11 +22,11 @@ object StateChecker {
     fun isMyTurnAllowed(gameState: GameState) =
         when (gameState) {
             GameState.NOT_INITIALIZED -> {
-                CheckResult(false, HttpStatus.FORBIDDEN, GameMessages.WE_ARE_NOT_PLAYING_YET)
+                CheckResult(false, HttpStatus.FORBIDDEN, GameResponse.GAME_IS_NOT_STARTED)
             }
 
             GameState.AWAITING_OTHER_PLAYER_MOVE -> {
-                CheckResult(false, HttpStatus.FORBIDDEN, GameMessages.AWAITING_OTHER_PLAYER_MOVE)
+                CheckResult(false, HttpStatus.FORBIDDEN, GameResponse.AWAITING_OTHER_PLAYER_MOVE)
             }
 
             else -> {
@@ -36,9 +36,9 @@ object StateChecker {
 
     fun isStartGameAllowed(gameState: GameState, number: Int) =
         if (gameState != GameState.NOT_INITIALIZED) {
-            CheckResult(false, HttpStatus.FORBIDDEN, GameMessages.WE_ARE_ALREADY_PLAYING)
+            CheckResult(false, HttpStatus.FORBIDDEN, GameResponse.ALREADY_PLAYING)
         } else if (!isInitialNumberAllowed(number)) {
-            CheckResult(false, HttpStatus.BAD_REQUEST, GameMessages.INVALID_NUMBER)
+            CheckResult(false, HttpStatus.BAD_REQUEST, GameResponse.INVALID_NUMBER)
         } else {
             CheckResult(true)
         }

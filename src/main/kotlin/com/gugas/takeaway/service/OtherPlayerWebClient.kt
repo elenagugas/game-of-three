@@ -1,6 +1,6 @@
-package com.gugas.takeaway.game
+package com.gugas.takeaway.service
 
-import org.slf4j.LoggerFactory
+import com.gugas.takeaway.game.GameMove
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -10,13 +10,11 @@ import org.springframework.web.reactive.function.client.WebClient
 import kotlin.jvm.optionals.getOrDefault
 
 @Component
-class OtherPlayerRestTemplate(
+class OtherPlayerWebClient(
     @Value("\${other.player.url}") private val otherPlayerUrl: String,
     @Value("\${other.player.endpoint.health}") private val healthEndpoint: String,
     @Value("\${other.player.endpoint.your-turn}") private val yourTurnEndpoint: String
 ) {
-
-    private val log = LoggerFactory.getLogger(this::class.java)
 
     private val webClient = WebClient.builder()
         .baseUrl(otherPlayerUrl)

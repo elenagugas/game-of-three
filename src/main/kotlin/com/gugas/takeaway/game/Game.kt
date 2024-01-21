@@ -1,7 +1,5 @@
 package com.gugas.takeaway.game
 
-import com.gugas.takeaway.GameMode
-
 object Game {
     var state: GameState = GameState.NOT_INITIALIZED
     var mode: GameMode = GameMode.MANUAL

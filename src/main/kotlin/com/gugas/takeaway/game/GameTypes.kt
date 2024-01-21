@@ -1,5 +1,8 @@
 package com.gugas.takeaway.game
 
+enum class GameMode {
+    AUTO, MANUAL
+}
 
 enum class MoveType(val value: Int) {
     PLUS_ONE(1),
