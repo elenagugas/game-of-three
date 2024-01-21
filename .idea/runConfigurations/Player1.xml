@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Player1" type="JetRunConfigurationType">
+    <option name="MAIN_CLASS_NAME" value="com.gugas.takeaway.TakeawayCodingChallengeApplicationKt" />
+    <module name="takeaway" />
+    <option name="PROGRAM_PARAMETERS" value="--spring.config.name=application-player-1" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
