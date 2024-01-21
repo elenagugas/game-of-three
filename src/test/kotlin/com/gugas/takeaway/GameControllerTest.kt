@@ -105,10 +105,43 @@ class GameControllerTest {
     }
 
     @Test
-    fun makeMyMove() {
+    fun makeMyMoveWhenGameIsNotStarted() {
         webTestClient.post().uri("/game/make-my-move").exchange()
             .expectStatus().isEqualTo(HttpStatus.FORBIDDEN)
             .expectBody(String::class.java).isEqualTo(GameResponse.GAME_IS_NOT_STARTED)
     }
 
+    @Test
+    fun makeMyMoveWhenAwaitingOtherPlayerMove() {
+        webTestClient.post().uri("/game/start/13").exchange()
+        webTestClient.post().uri("/game/make-my-move").exchange()
+            .expectStatus().isEqualTo(HttpStatus.FORBIDDEN)
+            .expectBody(String::class.java).isEqualTo(GameResponse.AWAITING_OTHER_PLAYER_MOVE)
+    }
+
+    @Test
+    fun makeMyMoveWhenItIsMyTurn() {
+        webTestClient.post().uri("/game/start/7").exchange()
+        webTestClient.post().uri("/game/your-turn").bodyValue(GameMove(MoveType.MINUS_ONE, 2)).exchange()
+        webTestClient.post().uri("/game/make-my-move").exchange()
+            .expectStatus().isEqualTo(HttpStatus.OK)
+            .expectBody(String::class.java).isEqualTo(GameResponse.MADE_A_MOVE)
+    }
+
+    @Test
+    fun loseGame() {
+        webTestClient.post().uri("/game/start/4").exchange()
+        webTestClient.post().uri("/game/your-turn").bodyValue(GameMove(MoveType.MINUS_ONE, 1)).exchange()
+            .expectStatus().isEqualTo(HttpStatus.OK)
+            .expectBody(String::class.java).isEqualTo(GameResponse.CONGRATULATIONS)
+    }
+
+    @Test
+    fun winGame() {
+        webTestClient.post().uri("/game/start/6").exchange()
+        webTestClient.post().uri("/game/your-turn").bodyValue(GameMove(MoveType.ZERO, 2)).exchange()
+        webTestClient.post().uri("/game/make-my-move").exchange()
+            .expectStatus().isEqualTo(HttpStatus.OK)
+            .expectBody(String::class.java).isEqualTo(GameResponse.MADE_A_MOVE)
+    }
 }

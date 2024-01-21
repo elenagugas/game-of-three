@@ -53,7 +53,6 @@ class GameController(
     @PostMapping("/your-turn")
     fun yourTurn(@RequestBody gameMove: GameMove): ResponseEntity<String> {
         log.info("Endpoint was triggered: " + Thread.currentThread().stackTrace[1].methodName)
-        log.info("Received a move of another player: $gameMove")
         return gameService.yourTurn(gameMove)
     }
 
