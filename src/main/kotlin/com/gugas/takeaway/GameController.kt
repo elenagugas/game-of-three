@@ -39,13 +39,13 @@ class GameController(
     }
 
     @PostMapping("/start/{number}")
-    fun startManualGame(@PathVariable number: Int): ResponseEntity<String> {
+    suspend fun startManualGame(@PathVariable number: Int): ResponseEntity<String> {
         log.info("Endpoint was triggered: " + Thread.currentThread().stackTrace[1].methodName)
         return startGame(number, GameMode.MANUAL)
     }
 
     @PostMapping("/start/auto")
-    fun startAutoGame(): ResponseEntity<String> {
+    suspend fun startAutoGame(): ResponseEntity<String> {
         log.info("Endpoint was triggered: " + Thread.currentThread().stackTrace[1].methodName)
         val number = GameHelper.generateRandomInitialNumber()
         return startGame(number, GameMode.AUTO)
@@ -99,7 +99,7 @@ class GameController(
         return ResponseEntity.ok(GameMessages.MADE_A_MOVE)
     }
 
-    private fun startGame(number: Int, mode: GameMode): ResponseEntity<String> {
+    private suspend fun startGame(number: Int, mode: GameMode): ResponseEntity<String> {
         val checkResult = StateChecker.isStartGameAllowed(Game.state, number)
         if (!checkResult.isAllowed) {
             return ResponseEntity.status(checkResult.httpCode).body(checkResult.reason)
@@ -122,4 +122,5 @@ class GameController(
             Game.restoreDefault()
         }
     }
+
 }

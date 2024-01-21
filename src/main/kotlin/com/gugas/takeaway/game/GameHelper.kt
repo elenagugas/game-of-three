@@ -15,7 +15,7 @@ object GameHelper {
         return number == 1
     }
 
-    fun generateRandomInitialNumber() : Int {
+    fun generateRandomInitialNumber(): Int {
         return (0..100).random()
     }
 }

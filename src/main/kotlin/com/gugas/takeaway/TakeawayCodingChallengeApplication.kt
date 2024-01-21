@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class TakeawayCodingChallengeApplication
 
 fun main(args: Array<String>) {
-	runApplication<TakeawayCodingChallengeApplication>(*args)
+    runApplication<TakeawayCodingChallengeApplication>(*args)
 }

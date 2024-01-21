@@ -20,12 +20,18 @@ object StateChecker {
         }
 
     fun isMyTurnAllowed(gameState: GameState) =
-        if (gameState == GameState.NOT_INITIALIZED) {
-            CheckResult(false, HttpStatus.FORBIDDEN, GameMessages.WE_ARE_NOT_PLAYING_YET)
-        } else if (gameState == GameState.AWAITING_OTHER_PLAYER_MOVE) {
-            CheckResult(false, HttpStatus.FORBIDDEN, GameMessages.AWAITING_OTHER_PLAYER_MOVE)
-        } else {
-            CheckResult(true)
+        when (gameState) {
+            GameState.NOT_INITIALIZED -> {
+                CheckResult(false, HttpStatus.FORBIDDEN, GameMessages.WE_ARE_NOT_PLAYING_YET)
+            }
+
+            GameState.AWAITING_OTHER_PLAYER_MOVE -> {
+                CheckResult(false, HttpStatus.FORBIDDEN, GameMessages.AWAITING_OTHER_PLAYER_MOVE)
+            }
+
+            else -> {
+                CheckResult(true)
+            }
         }
 
     fun isStartGameAllowed(gameState: GameState, number: Int) =
@@ -38,6 +44,6 @@ object StateChecker {
         }
 
     private fun isInitialNumberAllowed(number: Int): Boolean {
-        return number > 1;
+        return number > 1
     }
 }
