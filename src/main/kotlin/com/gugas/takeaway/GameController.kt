@@ -1,9 +1,9 @@
 package com.gugas.takeaway
 
 import com.gugas.takeaway.game.GameHelper
-import com.gugas.takeaway.game.GameResponse
 import com.gugas.takeaway.game.GameMode
 import com.gugas.takeaway.game.GameMove
+import com.gugas.takeaway.game.GameResponse
 import com.gugas.takeaway.service.GameService
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity

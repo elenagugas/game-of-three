@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
 
-
 class GameControllerTest {
 
     private val otherPlayerRestClient: OtherPlayerWebClient = mockk()
