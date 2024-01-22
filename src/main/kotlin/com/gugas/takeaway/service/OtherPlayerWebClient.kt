@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Mono
 import kotlin.jvm.optionals.getOrDefault
 
 @Component
@@ -27,18 +28,21 @@ class OtherPlayerWebClient(
             .uri(healthEndpoint)
             .retrieve()
             .toEntity(Void::class.java)
+            .onErrorResume { Mono.empty() }
             .map { responseEntity -> responseEntity.statusCode == HttpStatus.OK }
 
         return response.blockOptional().getOrDefault(false)
     }
 
-    fun sendGameMoveToOtherPlayer(gameMove: GameMove) {
+    fun sendGameMoveToOtherPlayer(gameMove: GameMove, onError: (Throwable) -> Unit) {
         webClient
             .post()
             .uri(yourTurnEndpoint)
             .bodyValue(gameMove)
             .retrieve()
             .toEntity(Void::class.java)
+            .doOnError { onError(it) }
+            .onErrorResume { Mono.empty() }
             .subscribe()
     }
 

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class GameService(
-    private val otherPlayerRestClient: OtherPlayerWebClient
+    private val otherPlayerWebClient: OtherPlayerWebClient
 ) {
 
     private val log = LoggerFactory.getLogger(this::class.java)
@@ -51,7 +51,7 @@ class GameService(
         }
         val myMove = GameHelper.makeMove(Game.currentNumber)
         log.info(GameResponse.MADE_A_MOVE + ": $myMove")
-        otherPlayerRestClient.sendGameMoveToOtherPlayer(myMove)
+        otherPlayerWebClient.sendGameMoveToOtherPlayer(myMove, this::onError)
         Game.currentNumber = myMove.result
         Game.state = GameState.AWAITING_OTHER_PLAYER_MOVE
         checkIfIWon(myMove)
@@ -63,13 +63,14 @@ class GameService(
         if (!checkResult.isAllowed) {
             return ResponseEntity.status(checkResult.httpCode).body(checkResult.reason)
         }
-        if (!otherPlayerRestClient.isOtherPlayerAlive()) {
+        if (!otherPlayerWebClient.isOtherPlayerAlive()) {
+            log.error(GameResponse.OTHER_PLAYER_NOT_AVAILABLE)
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(GameResponse.OTHER_PLAYER_NOT_AVAILABLE)
         }
 
         Game.currentNumber = number
         Game.mode = mode
-        otherPlayerRestClient.sendGameMoveToOtherPlayer(GameMove(MoveType.ZERO, number))
+        otherPlayerWebClient.sendGameMoveToOtherPlayer(GameMove(MoveType.ZERO, number), this::onError)
         Game.state = GameState.AWAITING_OTHER_PLAYER_MOVE
         log.info(GameResponse.STARTED_NEW_GAME + " Initial number: $number")
         return ResponseEntity.ok(GameResponse.STARTED_NEW_GAME)
@@ -78,7 +79,7 @@ class GameService(
     fun makeAutoMove(gameMove: GameMove) {
         val myMove = GameHelper.makeMove(gameMove.result)
         log.info("Made my move: $myMove")
-        otherPlayerRestClient.sendGameMoveToOtherPlayer(myMove)
+        otherPlayerWebClient.sendGameMoveToOtherPlayer(myMove, this::onError)
         Game.state = GameState.AWAITING_OTHER_PLAYER_MOVE
         checkIfIWon(myMove)
     }
@@ -94,5 +95,12 @@ class GameService(
             log.info(GameResponse.CONGRATULATIONS)
             Game.restoreDefault()
         }
+    }
+
+    private fun onError(throwable: Throwable) {
+        log.error(throwable.message)
+        log.error(GameResponse.OTHER_PLAYER_NOT_AVAILABLE)
+        log.info(GameResponse.CONGRATULATIONS)
+        Game.restoreDefault()
     }
 }

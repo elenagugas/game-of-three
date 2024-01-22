@@ -13,15 +13,15 @@ import org.springframework.test.web.reactive.server.WebTestClient
 
 class GameControllerTest {
 
-    private val otherPlayerRestClient: OtherPlayerWebClient = mockk()
-    private val gameService = GameService(otherPlayerRestClient)
+    private val otherPlayerWebClient: OtherPlayerWebClient = mockk()
+    private val gameService = GameService(otherPlayerWebClient)
     private val gameController = GameController(gameService)
     private val webTestClient = WebTestClient.bindToController(gameController).build()
 
     @BeforeEach
     fun setUp() {
-        coEvery { otherPlayerRestClient.isOtherPlayerAlive() } returns true
-        coEvery { otherPlayerRestClient.sendGameMoveToOtherPlayer(any()) } returns mockk()
+        coEvery { otherPlayerWebClient.isOtherPlayerAlive() } returns true
+        coEvery { otherPlayerWebClient.sendGameMoveToOtherPlayer(any(), any()) } returns mockk()
         Game.restoreDefault()
     }
 
@@ -85,6 +85,15 @@ class GameControllerTest {
 
         Assertions.assertThat(Game.mode).isEqualTo(GameMode.AUTO)
         Assertions.assertThat(Game.state).isEqualTo(GameState.AWAITING_OTHER_PLAYER_MOVE)
+    }
+
+
+    @Test
+    fun startGameWhenOtherPlayerIsNotAvailable() {
+        coEvery { otherPlayerWebClient.isOtherPlayerAlive() } returns false
+        webTestClient.post().uri("/game/start/auto").exchange()
+            .expectStatus().isEqualTo(HttpStatus.SERVICE_UNAVAILABLE)
+            .expectBody(String::class.java).isEqualTo(GameResponse.OTHER_PLAYER_NOT_AVAILABLE)
     }
 
 
